@@ -55,6 +55,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     echo "<script>alert('Attendee ID missing');</script>";
                     exit();
                 }
+
+                $_SESSION['attendee_id'] = $row['attendee_code'];
                 header("Location: ./Attendee/attendee_dashboard.php");
                 exit();
             }

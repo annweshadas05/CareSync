@@ -1,0 +1,211 @@
+/* CareSync Admin Dashboard Theme */
+:root {
+    --sidebar-bg: #061727;
+    --main-bg: #f4f7fe;
+    --primary-blue: #0061ff;
+    --accent-blue: #60efff;
+    --card-white: rgba(255, 255, 255, 0.9);
+    --text-dark: #1e293b;
+    --text-muted: #64748b;
+    --success-green: #10b981;
+}
+
+body {
+    margin: 0;
+    font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+    background-color: var(--main-bg);
+    display: flex;
+    min-height: 100vh;
+    color: var(--text-dark);
+}
+
+/* Sidebar Navigation */
+.sidebar {
+    width: 260px;
+    background: var(--sidebar-bg);
+    color: white;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding: 30px 20px;
+    box-sizing: border-box;
+    z-index: 100;
+}
+
+.sidebar-logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 40px;
+    background: linear-gradient(to right, var(--primary-blue), var(--accent-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-item {
+    padding: 12px 15px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    color: #94a3b8;
+    transition: 0.3s;
+    font-weight: 500;
+}
+
+.nav-item.active {
+    background: rgba(0, 97, 255, 0.1);
+    color: white;
+    border-left: 4px solid var(--primary-blue);
+}
+
+/* Main Layout Area */
+.main-layout {
+    margin-left: 260px;
+    flex: 1;
+    padding: 30px 40px;
+}
+
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.top-header h1 {
+    font-size: 1.8rem;
+    margin: 0;
+    font-weight: 700;
+}
+
+/* Dashboard Cards (Glassmorphism) */
+.glass-card {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Upload Interface */
+.file-drop-area {
+    border: 2px dashed #cbd5e1;
+    border-radius: 15px;
+    padding: 40px;
+    text-align: center;
+    cursor: pointer;
+    background: #f8fafc;
+    transition: 0.3s;
+}
+
+.file-drop-area:hover {
+    border-color: var(--primary-blue);
+    background: #eff6ff;
+}
+
+#imagePreviewContainer {
+    margin: 20px 0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#prescriptionPreview {
+    max-width: 100%;
+    max-height: 300px;
+    border: 1px solid #e2e8f0;
+}
+
+/* Admin Table Styling */
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    padding: 15px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+td {
+    padding: 15px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.edit-input {
+    width: 100%;
+    border: 1px solid transparent;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+.edit-input:focus {
+    outline: none;
+    background: #f1f5f9;
+    border-color: var(--primary-blue);
+}
+
+/* Notes & Instructions */
+#prescriptionNotes {
+    width: 100%;
+    min-height: 100px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 15px;
+    font-family: inherit;
+    background: #f8fafc;
+}
+
+/* Buttons */
+.btn {
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: 0.3s;
+}
+
+.btn-primary {
+    background: var(--primary-blue);
+    color: white;
+    width: 100%;
+}
+
+.btn-success {
+    background: var(--success-green);
+    color: white;
+}
+
+.btn:disabled {
+    background: #cbd5e1;
+}
+
+/* Loader */
+.loader {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    color: var(--primary-blue);
+    font-weight: 600;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #e2e8f0;
+    border-top: 3px solid var(--primary-blue);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }

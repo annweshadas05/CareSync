@@ -2,13 +2,13 @@
 session_start();
 require_once '../dbconnect.php';
 
-if (!isset($_SESSION['email'])) {
+if (!isset($_SESSION['attendee_id'])) {
     header('location:../login.php');
     exit();
 }
 
 
-$id = $_SESSION['attendee_code'];
+$id = $_SESSION['attendee_id'];
 $qry = "SELECT * FROM attendees WHERE attendee_code=?";
 $stmt = $conn->prepare($qry);
 $stmt->bind_param("s", $id);
@@ -53,9 +53,8 @@ $row = ($result->num_rows > 0) ? $result->fetch_assoc() : die("Attendee not foun
     <nav class="nav flex-column">
         <a class="nav-link active" href="#"><i data-lucide="layout-dashboard"></i> <span>Dashboard</span></a>
         <a class="nav-link" href="new_registration.php"><i data-lucide="user-plus"></i> <span>New Patient</span></a>
-        <a class="nav-link" href="upload_records.php"><i data-lucide="file-up"></i> <span>Upload Records</span></a>
+        <a class="nav-link" href="../prescription_reader/php-test-app/index.php"><i data-lucide="file-up"></i> <span>Upload Records</span></a>
         <a class="nav-link" href="queue.php"><i data-lucide="list-ordered"></i> <span>Today's Queue</span></a>
-        
         <a href="../logout.php" class="nav-link logout-link"><i data-lucide="log-out"></i> <span>Logout</span></a>
     </nav>
 </div>
