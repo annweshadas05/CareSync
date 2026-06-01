@@ -20,6 +20,6 @@ CareSync is a patient service management web application that connects patients,
 3. Open `localhost/CareSync`
 
 ## Author
-Anwesha Das
-Manish Sharma
-K Sudhakar Reddy
+Anwesha Das , 
+Manish Sharma ,
+K Sudhakar Reddy .
