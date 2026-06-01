@@ -4,7 +4,7 @@ require_once "../dbconnect.php";
 
 $name = "Admin";
 $email = "admincaresync@gmail.com";
-$password = "admin123";
+$password = "Admin@123";
 
 $hash = password_hash($password, PASSWORD_DEFAULT);
 

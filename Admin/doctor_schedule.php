@@ -2,13 +2,11 @@
 session_start();
 require_once '../dbconnect.php';
 
-// Check if admin is logged in
 if (!isset($_SESSION['email'])) {
     header('location:../login.php');
     exit();
 }
 
-// Search operation
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $whereClause = "WHERE a.status = 'confirmed'";
 $params = [];
@@ -25,7 +23,7 @@ $query = "
     SELECT a.id, a.status, t.start_time, d.name as doctor_name, p.name as patient_name
     FROM appointments a
     JOIN time_slots t ON a.slot_id = t.id
-    JOIN users p ON a.patient_code = p.id
+    JOIN users p ON a.patient_code = p.patient_code
     JOIN users d ON t.doctor_code = d.id
     $whereClause
     ORDER BY t.start_time DESC
@@ -45,19 +43,12 @@ $result = $stmt->get_result();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CareSync | Scheduled Appointments</title>
-    
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="../Bootstrap/bootstrap.min.css">
-    
-    <!-- Using Admin Dashboard CSS for Uniform Theme -->
+    <link rel="stylesheet" href="../Bootstrap/bootstrap.min.css"> 
     <link rel="stylesheet" href="../styles/admin_dashboard.css?v=<?php echo time(); ?>">
-    
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="../js/lucide.js"></script>
 </head>
 <body>
 
-    <!-- SIDEBAR -->
     <div class="sidebar shadow">
         <div class="text-center mb-5">
             <img src="../Assets/CareSyncLogo.png" width="45" alt="Logo">
@@ -68,8 +59,8 @@ $result = $stmt->get_result();
             <a class="nav-link" href="admin_dashboard.php"><i data-lucide="layout-grid"></i> <span>Dashboard</span></a>
             <a class="nav-link" href="manage_doctor.php"><i data-lucide="user-cog"></i> <span>Doctors</span></a>
             <a class="nav-link" href="manage_patient.php"><i data-lucide="users"></i> <span>Patients</span></a>
+            <a class="nav-link" href="manage_attendee.php"><i data-lucide="user-check"></i> <span>Attendees</span></a>
             <a class="nav-link active" href="doctor_schedule.php"><i data-lucide="calendar"></i> <span>Appointments</span></a>
-            <a class="nav-link" href="records.php"><i data-lucide="file-text"></i> <span>Records</span></a>
             <a class="nav-link" href="reports.php"><i data-lucide="bar-chart-3"></i> <span>Reports</span></a>
         </nav>
 
@@ -78,10 +69,8 @@ $result = $stmt->get_result();
         </a>
     </div>
 
-    <!-- MAIN CONTENT -->
     <div class="main-content">
         
-        <!-- HEADER -->
         <div class="d-flex justify-content-between align-items-center mb-5">
             <div>
                 <h2 class="fw-bold mb-0">Scheduled Appointments</h2>
@@ -94,7 +83,6 @@ $result = $stmt->get_result();
             </div>
         </div>
 
-        <!-- FILTER & SEARCH SECTION -->
         <div class="glass-card mb-4 p-4 border-0 shadow-lg">
             <form method="GET" action="doctor_schedule.php" class="row g-3">
                 <div class="col-md-10">
@@ -108,7 +96,6 @@ $result = $stmt->get_result();
             </form>
         </div>
 
-        <!-- APPOINTMENTS TABLE -->
         <div class="glass-card p-0 overflow-hidden shadow-lg border-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0 text-center">
@@ -154,7 +141,6 @@ $result = $stmt->get_result();
     </div>
 
     <script>
-        // Initialize Icons
         lucide.createIcons();
     </script>
     <script src="../Bootstrap/bootstrap.bundle.min.js"></script>

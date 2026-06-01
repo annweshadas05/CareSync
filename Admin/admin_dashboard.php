@@ -1,27 +1,30 @@
-<!-- <?php
+<?php
 session_start();
 require_once '../dbconnect.php';
 
-// Check if admin is logged in
 if (!isset($_SESSION['email'])) {
     header('location:../login.php');
     exit();
 }
 
-// 1. Total Doctors
 $docQuery = "SELECT COUNT(*) as total FROM doctors";
 $docResult = $conn->query($docQuery);
 $docCount = $docResult->fetch_assoc()['total'];
 
-// 2. Total Patients
 $patQuery = "SELECT COUNT(*) as total FROM patients";
 $patResult = $conn->query($patQuery);
 $patCount = $patResult->fetch_assoc()['total'];
 
-// 3. Activity Logs
+$appQuery = "SELECT COUNT(*) as total 
+             FROM appointments 
+             WHERE DATE(start_time) = CURDATE()
+             AND status = 'confirmed'";
+$appResult = $conn->query($appQuery);
+$appCount = $appResult->fetch_assoc()['total'];
+
 $activityQuery = "SELECT * FROM activity_logs ORDER BY created_at DESC LIMIT 5";
 $activityResult = $conn->query($activityQuery);
-?> -->
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -31,7 +34,7 @@ $activityResult = $conn->query($activityQuery);
     <title>CareSync | Admin Dashboard</title>
     <link rel="stylesheet" href="../Bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="../styles/admin_dashboard.css?v=<?php echo time(); ?>">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="../js/lucide.js"></script>
 </head>
 <body>
 
@@ -45,14 +48,13 @@ $activityResult = $conn->query($activityQuery);
             <a class="nav-link active" href="#"><i data-lucide="layout-grid"></i> <span>Dashboard</span></a>
             <a class="nav-link" href="manage_doctor.php"><i data-lucide="user-cog"></i> <span>Doctors</span></a>
             <a class="nav-link" href="manage_patient.php"><i data-lucide="users"></i> <span>Patients</span></a>
+            <a class="nav-link" href="manage_attendee.php"><i data-lucide="user-check"></i> <span>Attendees</span></a>
             <a class="nav-link" href="doctor_schedule.php"><i data-lucide="calendar"></i> <span>Appointments</span></a>
-            <a class="nav-link" href="records.php"><i data-lucide="file-text"></i> <span>Records</span></a>
             <a class="nav-link" href="reports.php"><i data-lucide="bar-chart-3"></i> <span>Reports</span></a>
-        </nav>
-
-        <a href="../logout.php" class="nav-link logout-link">
+            <a href="../logout.php" class="nav-link logout-link">
             <i data-lucide="log-out"></i> <span>Logout</span>
-        </a>
+            </a>
+        </nav>
     </div>
 
     <div class="main-content">
@@ -87,11 +89,13 @@ $activityResult = $conn->query($activityQuery);
             <div class="col-md-4">
                 <div class="glass-card text-center h-100">
                     <div class="icon-box text-warning mx-auto mb-3"><i data-lucide="calendar-days"></i></div>
-                    <h3 class="fw-bold">00</h3>
+                    <h3 class="fw-bold"><?php echo $appCount; ?></h3>
                     <p class="text-muted small fw-bold mb-0">APPOINTMENTS TODAY</p>
                 </div>
             </div>
         </div>
+
+        <div class="row g-4 mb-5">
 
         <div class="row g-4 mb-5">
             <div class="col-lg-4">
@@ -101,7 +105,6 @@ $activityResult = $conn->query($activityQuery);
                         <a href="./add_doctor.php" class="action-btn text-center">Add New Doctor</a>
                         <a href="./add_patient.php" class="btn btn-outline-primary rounded-pill py-2 fw-bold">Add New Patient</a>
                         <a href="./add_attendee.php" class="action-btn text-center">Add New Attendee</a>
-                        <a href="#" class="btn btn-outline-dark rounded-pill py-2 fw-bold">Upload System Report</a>
                     </div>
                 </div>
             </div>

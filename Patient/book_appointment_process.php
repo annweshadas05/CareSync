@@ -32,8 +32,8 @@ $doctor_id = (int)$_POST['doctor_id'];
 $slot_id = (int)$_POST['slot_id'];
 $reason = $_POST['reason'] ?? '';
 
-// Get doctor users.id
-$stmt = $conn->prepare("SELECT users.id, doctors.full_name as doctor_name FROM users INNER JOIN doctors ON users.doctor_code = doctors.doctor_code WHERE doctors.id = ?");
+// Get doctor users.id and code
+$stmt = $conn->prepare("SELECT users.id, doctors.doctor_code as actual_doc_code, doctors.full_name as doctor_name FROM users INNER JOIN doctors ON users.doctor_code = doctors.doctor_code WHERE doctors.id = ?");
 $stmt->bind_param("i", $doctor_id);
 $stmt->execute();
 $docRes = $stmt->get_result();
@@ -42,6 +42,7 @@ if($docRes->num_rows == 0) {
 }
 $docData = $docRes->fetch_assoc();
 $doctor_user_id = $docData['id'];
+$actual_doctor_code = $docData['actual_doc_code'];
 $doctor_name = $docData['doctor_name'];
 
 // Validate Slot
@@ -59,7 +60,7 @@ $slot = $slotInfo->fetch_assoc();
 
 // Check if patient already has a booking for the same slot
 $stmt = $conn->prepare("SELECT id FROM appointments WHERE patient_code = ? AND slot_id = ? AND status != 'cancelled'");
-$stmt->bind_param("ii", $patient_user_id, $slot_id);
+$stmt->bind_param("si", $patient_code_session, $slot_id);
 $stmt->execute();
 if ($stmt->get_result()->num_rows > 0) {
     echo "<script>alert('You have already booked this slot!'); window.location='book_appointment.php';</script>";
@@ -69,7 +70,7 @@ if ($stmt->get_result()->num_rows > 0) {
 // Insert Appointment
 $query = "INSERT INTO appointments (patient_code, doctor_code, slot_id, reason, start_time, end_time, location, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'confirmed')";
 $stmt = $conn->prepare($query);
-$stmt->bind_param("iiissss", $patient_user_id, $doctor_user_id, $slot_id, $reason, $slot['start_time'], $slot['end_time'], $slot['location']);
+$stmt->bind_param("ssissss", $patient_code_session, $actual_doctor_code, $slot_id, $reason, $slot['start_time'], $slot['end_time'], $slot['location']);
 
 if($stmt->execute()){
     // Update slot booking count

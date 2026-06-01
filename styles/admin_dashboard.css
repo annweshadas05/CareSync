@@ -115,3 +115,29 @@ body {
 }
 
 .bg-primary-soft { background: rgba(0, 97, 255, 0.1); }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 20px;
+    }
+
+    .glass-card {
+        padding: 15px;
+    }
+
+    .icon-box {
+        width: 40px;
+        height: 40px;
+    }
+
+    .action-btn {
+        padding: 10px;
+    }
+}

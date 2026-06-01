@@ -112,7 +112,7 @@
     </div>
 
     <script src="../Bootstrap/bootstrap.bundle.min.js"></script>
-    <script src="../js/add_doctor.js"></script>
+    <script src="../js/add_doctor.js?v=<?= time() ?>"></script>
 
    
 
@@ -122,14 +122,14 @@
         require_once "../dbconnect.php";
 
         $success = false;
-        $name = $_POST['name'];
-        $department = $_POST['department'];
-        $specialization = $_POST['specialization'];
+        $name = trim($_POST['name']);
+        $department = trim($_POST['department']);
+        $specialization = trim($_POST['specialization']);
         $experience = (int) $_POST['experience'];
-        $contact = $_POST['contact'];
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-        $confirmPassword = $_POST['confirmpassword'];
+        $contact = trim($_POST['contact']);
+        $email = trim($_POST['email']);
+        $password = trim($_POST['password']);
+        $confirmPassword = trim($_POST['confirmpassword']);
 
         if ($password != $confirmPassword) {
             echo "<script>alert('Passwords do not match');</script>";

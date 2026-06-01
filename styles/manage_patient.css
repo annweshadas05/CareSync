@@ -119,3 +119,25 @@
     justify-content: center;
     background: #f1f5f9;
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .glass-card {
+        padding: 15px;
+    }
+
+    .table thead th,
+    .table tbody tr td {
+        padding: 10px 5px;
+        font-size: 0.8rem;
+    }
+
+    .btn-rounded {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    .form-control, .form-select {
+        padding: 8px 12px;
+    }
+}

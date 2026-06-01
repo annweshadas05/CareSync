@@ -5,9 +5,9 @@ require_once "./contact_mail.php";
 $success = false; 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
-    $name = htmlspecialchars($_POST['name']);
-    $email = htmlspecialchars($_POST['email']);
-    $message = htmlspecialchars($_POST['message']);
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $message = $_POST['message'];
 
     $qry = "INSERT INTO contact(name,email,message) VALUES(?,?,?)";
     $stmt = $conn->prepare($qry);
@@ -35,16 +35,16 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CareSync | Smart Digital Healthcare</title>
     <link rel="stylesheet" href="./Bootstrap/bootstrap.min.css">
-    <link rel="stylesheet" href="styles/home.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="styles/home.css">
 </head>
 
 <body>
     <nav class="navbar navbar-expand-lg navbar-light custom-navbar sticky-top">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="#">
+            <div class="navbar-brand d-flex align-items-center" >
                 <img src="./Assets/CareSyncLogo.png" alt="Logo" class="logo-img">
                 <span class="text-light">CareSync</span>
-            </a>
+            </div>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 <div class="col-lg-6 text-center text-lg-start">
                     <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 mb-3 rounded-pill fw-bold">Smart Digital Healthcare</span>
                     <h1 class="display-4 fw-bold mb-4">Digitizing Prescriptions. <br><span class="text-primary">Simplifying Healthcare.</span></h1>
-                    <p class="hero-lead mb-5">
+                    <p class="hero-lead fw-bold mb-5">
                         CareSync transforms traditional medical records into secure, organized digital data. 
                         We help doctors and patients access vital information anywhere, anytime.
                     </p>
@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                                 <img src="icons/<?= $s['icon'] ?>" width="35" alt="icon">
                             </div>
                             <h5 class="fw-bold mb-3"><?= $s['title'] ?></h5>
-                            <p class="text-muted small mb-0"><?= $s['desc'] ?></p>
+                            <p class="text-muted fw-bold small mb-0"><?= $s['desc'] ?></p>
                         </div>
                     </div>
                 <?php endforeach; ?>

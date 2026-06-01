@@ -29,7 +29,6 @@ $conn = connectDB();
 $user_id = $_SESSION['user_id'];
 $role = $_SESSION['role'];
 
-// Handle AJAX cancellation
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_cancel'])) {
     header('Content-Type: application/json');
 
@@ -50,13 +49,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_cancel'])) {
         $conn->begin_transaction();
 
         $stmt = $conn->prepare("
-            SELECT a.*, t.start_time, t.doctor_code, 
-                   d.name as doctor_name, p.name as patient_name
+            SELECT a.*, t.start_time, t.doctor_code as slot_doc_code, 
+                   d.name as doctor_name, p.name as patient_name,
+                   d.id as d_user_id, p.id as p_user_id
             FROM appointments a
             JOIN time_slots t ON a.slot_id = t.id
-            JOIN users d ON t.doctor_code = d.id
-            JOIN users p ON a.patient_code = p.id
-            WHERE a.id = ? AND (a.patient_code = ? OR t.doctor_code = ?) AND a.status = 'confirmed'
+            JOIN users d ON a.doctor_code = d.doctor_code
+            JOIN users p ON a.patient_code = p.patient_code
+            WHERE a.id = ? AND (p.id = ? OR d.id = ?) AND a.status = 'confirmed'
         ");
 
         $stmt->bind_param("iii", $appointment_id, $user_id, $user_id);
@@ -68,27 +68,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_cancel'])) {
         }
 
         $appointment = $result->fetch_assoc();
-        $canceller_type = ($appointment['patient_code'] == $user_id) ? 'patient' : 'doctor';
+        $canceller_type = ($appointment['p_user_id'] == $user_id) ? 'patient' : 'doctor';
         $canceller_name = ($canceller_type == 'patient') ? $appointment['patient_name'] : $appointment['doctor_name'];
 
         $deleteApt = $conn->prepare("DELETE FROM appointments WHERE id = ?");
         $deleteApt->bind_param("i", $appointment_id);
         $deleteApt->execute();
 
-        $notification_recipient_id = ($canceller_type == 'patient') ? $appointment['doctor_code'] : $appointment['patient_code'];
+        $notification_recipient_id = ($canceller_type == 'patient') ? $appointment['d_user_id'] : $appointment['p_user_id'];
         $notification_message = "Your appointment on " . date('l, F j, Y', strtotime($appointment['start_time'])) . " has been cancelled.";
         $notify = $conn->prepare("INSERT INTO notifications (user_id, message, type) VALUES (?, ?, 'appointment')");
         $notify->bind_param("is", $notification_recipient_id, $notification_message);
         $notify->execute();
         
-        // =============== SEND EMAIL VIA PHPMAILER ===============
         $stmt_pat = $conn->prepare("
             SELECT p.email, p.full_name 
             FROM patients p
-            JOIN users u ON p.patient_code = u.patient_code
-            WHERE u.id = ?
+            WHERE p.patient_code = ?
         ");
-        $stmt_pat->bind_param("i", $appointment['patient_code']);
+        $stmt_pat->bind_param("s", $appointment['patient_code']);
         $stmt_pat->execute();
         $patRes = $stmt_pat->get_result();
         
@@ -150,23 +148,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_cancel'])) {
     }
 }
 
-// Fetch all up-to-date appointments for the user/doctor
 $appointments = [];
 $error_message = "";
 
 try {
     if ($role === 'doctor') {
-        $query = "SELECT a.id, a.status, a.patient_code, a.reason, a.slot_id, u.name as username, t.start_time, t.end_time, t.location, t.doctor_code
-            FROM appointments a JOIN time_slots t ON a.slot_id = t.id JOIN users u ON a.patient_code = u.id
-            WHERE t.doctor_code = ? ORDER BY t.start_time DESC LIMIT 50";
+        $query = "SELECT a.id, a.status, a.patient_code, a.reason, a.slot_id, u.name as username, t.start_time, t.end_time, t.location, a.doctor_code
+            FROM appointments a JOIN time_slots t ON a.slot_id = t.id JOIN users u ON a.patient_code = u.patient_code
+            WHERE a.doctor_code = ? ORDER BY t.start_time DESC LIMIT 50";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("s", $_SESSION['doctor_id']);
     } else {
-        $query = "SELECT a.id, a.status, a.patient_code, a.reason, a.slot_id, u.name as username, t.start_time, t.end_time, t.location, t.doctor_code
-            FROM appointments a JOIN time_slots t ON a.slot_id = t.id JOIN users u ON t.doctor_code = u.id
-            WHERE a.patient_code = ? ORDER BY t.start_time DESC LIMIT 50";
+        $query = "SELECT a.id, a.status, a.patient_code, a.reason, a.slot_id, u.name as username, t.start_time, t.end_time, t.location, a.doctor_code
+            FROM appointments a JOIN time_slots t ON a.slot_id = t.id JOIN users u ON a.doctor_code = u.doctor_code
+            WHERE a.patient_code = ? AND t.start_time >= NOW() ORDER BY t.start_time ASC LIMIT 50";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("s", $_SESSION['patient_id']);
     }
-    
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -185,7 +183,7 @@ try {
     <title>CareSync | Appointments</title>
     <link rel="stylesheet" href="../Bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="../styles/<?php echo $role === 'doctor' ? 'doctor' : 'patient'; ?>_dashboard.css?v=<?php echo time(); ?>">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="../js/lucide.js"></script>
     <style>
         .slot-card {
             background: rgba(255, 255, 255, 0.9);
@@ -215,20 +213,23 @@ try {
             <a class="nav-link" href="../Doctor/doctor_dashboard.php"><i data-lucide="layout-dashboard"></i> <span>Dashboard</span></a>
             <a class="nav-link active" href="appointments.php"><i data-lucide="calendar"></i> <span>Appointments</span></a>
             <a class="nav-link" href="../Doctor/manage_schedule.php"><i data-lucide="clock"></i> <span>My Schedule</span></a>
-            <a class="nav-link" href="#"><i data-lucide="users"></i> <span>Patients</span></a>
+            <a class="nav-link" href="../Doctor/look_patient.php"><i data-lucide="users"></i> <span>Check Registerd Patient</span></a>
             <a class="nav-link" href="#"><i data-lucide="clipboard-list"></i> <span>Notes</span></a>
+            <a href="../logout.php" class="nav-link logout-link mt-auto text-danger fw-bold">
+            <i data-lucide="log-out"></i> <span>Logout</span>
+            </a>    
         <?php else: ?>
             <a class="nav-link" href="../Patient/patient_dashboard.php"><i data-lucide="layout-dashboard"></i> <span>Dashboard</span></a>
             <a class="nav-link" href="../Patient/search_doctor.php"><i data-lucide="search"></i> <span>Search Doctor</span></a>
             <a class="nav-link active" href="appointments.php"><i data-lucide="calendar"></i> <span>Appointments</span></a>
-            <a class="nav-link" href="#"><i data-lucide="pill"></i> <span>Prescriptions</span></a>
-            <a class="nav-link" href="#"><i data-lucide="file-text"></i> <span>Health Reports</span></a>
+            <a class="nav-link" href="../Patient/medical_records.php"><i data-lucide="pill"></i> <span>Prescriptions</span></a>
+            <a class="nav-link" href="../Patient/medical_records.php"><i data-lucide="file-text"></i> <span>Health Reports</span></a>
+            <a href="../logout.php" class="nav-link logout-link mt-auto text-danger fw-bold">
+            <i data-lucide="log-out"></i> <span>Logout</span>
+            </a>
         <?php endif; ?>
         </nav>
 
-        <a href="../logout.php" class="nav-link logout-link mt-auto">
-            <i data-lucide="log-out"></i> <span>Logout</span>
-        </a>
     </div>
 
     <div class="main-content">

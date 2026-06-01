@@ -24,7 +24,6 @@ if (!isset($_SESSION['csrf_token'])) {
 $conn = connectDB();
 $user_id = $_SESSION['user_id'];
 
-// Handle filters
 $doctor_code = isset($_GET['doctor_code']) ? (int)$_GET['doctor_code'] : null;
 $today = date('Y-m-d');
 $date_from = isset($_GET['date_from']) ? $_GET['date_from'] : $today;
@@ -32,7 +31,6 @@ $date_to = isset($_GET['date_to']) ? $_GET['date_to'] : date('Y-m-d', strtotime(
 
 if ($date_from < $today) $date_from = $today;
 
-// Get all doctors for filter dropdown
 $doctors_query = "SELECT u.id, d.full_name as username, d.specialization as specialty 
                   FROM users u 
                   JOIN doctors d ON u.doctor_code = d.doctor_code 
@@ -43,11 +41,10 @@ if ($doctors_result) {
     while ($doctor = $doctors_result->fetch_assoc()) $doctors[] = $doctor;
 }
 
-// Build query for available time slots
 $query = "SELECT ts.*, d.full_name as doctor_name, d.specialization as specialty, 
           (SELECT COUNT(*) FROM appointments WHERE slot_id = ts.id) as booked_count
           FROM time_slots ts
-          JOIN users u ON ts.doctor_code = u.id /* Fixed the user's manual typo */
+          JOIN users u ON ts.doctor_code = u.id 
           JOIN doctors d ON u.doctor_code = d.doctor_code
           WHERE ts.status = 'available'
           AND ts.start_time BETWEEN ? AND ?
@@ -74,10 +71,10 @@ while ($row = $result->fetch_assoc()) {
     $slots[$date][] = $row;
 }
 
-// Get user's existing bookings to prevent double booking
+$patient_code_session = $_SESSION['patient_id'];
 $booked_query = "SELECT slot_id FROM appointments WHERE patient_code = ?";
 $booked_stmt = $conn->prepare($booked_query);
-$booked_stmt->bind_param("i", $user_id);
+$booked_stmt->bind_param("s", $patient_code_session);
 $booked_stmt->execute();
 $booked_result = $booked_stmt->get_result();
 $booked_slots = [];
@@ -94,7 +91,7 @@ while ($booked = $booked_result->fetch_assoc()) {
     <title>CareSync | Book Appointment</title>
     <link rel="stylesheet" href="../Bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="../styles/patient_dashboard.css?v=<?php echo time(); ?>">
-    <script src="https://unpkg.com/lucide@latest"></script>
+     <script src="../js/lucide.js"></script>
     <style>
         .slot-card {
             background: white;
@@ -138,11 +135,11 @@ while ($booked = $booked_result->fetch_assoc()) {
             <a class="nav-link active" href="appointments.php"><i data-lucide="calendar"></i> <span>Appointments</span></a>
             <a class="nav-link" href="#"><i data-lucide="pill"></i> <span>Prescriptions</span></a>
             <a class="nav-link" href="#"><i data-lucide="file-text"></i> <span>Health Reports</span></a>
+            <a href="../logout.php" class="nav-link logout-link mt-auto">
+            <i data-lucide="log-out"></i> <span>Logout</span>
+            </a>
         </nav>
 
-        <a href="../logout.php" class="nav-link logout-link mt-auto">
-            <i data-lucide="log-out"></i> <span>Logout</span>
-        </a>
     </div>
 
     <div class="main-content">

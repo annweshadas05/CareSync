@@ -107,7 +107,7 @@ try {
     <title>CareSync | Cancel Appointment</title>
     <link rel="stylesheet" href="../Bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="../styles/<?php echo $role === 'doctor' ? 'doctor' : 'patient'; ?>_dashboard.css?v=<?php echo time(); ?>">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="../js/lucide.js"></script>
 </head>
 <body>
 

@@ -13,18 +13,17 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'patient') {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $slot_id = (int)$_POST['slot_id'];
-    $patient_code = $_SESSION['user_id'];
+    $patient_code = $_SESSION['patient_id']; // This is the actual patient code like PAT-...
     $reason = isset($_POST['reason']) ? trim($_POST['reason']) : '';
 
     try {
         $conn->begin_transaction();
 
-        // Check if the patient has already booked this slot
         $existingBookingStmt = $conn->prepare("
             SELECT id FROM appointments 
             WHERE patient_code = ? AND slot_id = ?
         ");
-        $existingBookingStmt->bind_param("ii", $patient_code, $slot_id);
+        $existingBookingStmt->bind_param("si", $patient_code, $slot_id);
         $existingBookingStmt->execute();
         $existingBookingResult = $existingBookingStmt->get_result();
 
@@ -35,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // Check slot availability and capacity with row locking to prevent race conditions
         $slotStmt = $conn->prepare("
             SELECT ts.*, 
                    (SELECT COUNT(*) FROM appointments WHERE slot_id = ts.id AND status != 'cancelled') as current_bookings 
@@ -54,7 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // Check if appointment time is in the past
         $current_time = time();
         $appointment_time = strtotime($slot['start_time']);
 
@@ -65,7 +62,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // Check if slot is at capacity
         if (isset($slot['capacity']) && $slot['current_bookings'] >= $slot['capacity']) {
             $conn->rollback();
             $_SESSION['error'] = "This appointment slot is full";
@@ -73,11 +69,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // Create appointment
+        $stmt_doc = $conn->prepare("SELECT u.name, d.doctor_code as actual_doc_code FROM users u JOIN doctors d ON u.doctor_code = d.doctor_code WHERE u.id = ?");
+        $stmt_doc->bind_param("i", $slot['doctor_code']);
+        $stmt_doc->execute();
+        $docData = $stmt_doc->get_result()->fetch_assoc();
+        $actual_doctor_code = $docData['actual_doc_code'] ?? null;
+
         $apptStmt = $conn->prepare("INSERT INTO appointments 
             (patient_code, slot_id, reason, doctor_code, start_time, end_time, location) 
             VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $apptStmt->bind_param("iisisss", $patient_code, $slot_id, $reason, $slot['doctor_code'], $slot['start_time'], $slot['end_time'], $slot['location']);
+        $apptStmt->bind_param("sississ", $patient_code, $slot_id, $reason, $actual_doctor_code, $slot['start_time'], $slot['end_time'], $slot['location']);
 
         if (!$apptStmt->execute()) {
             $conn->rollback();
@@ -86,7 +87,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // Update booked_count in the time slot
         $updateSlotStmt = $conn->prepare("UPDATE time_slots SET booked_count = booked_count + 1 WHERE id = ?");
         $updateSlotStmt->bind_param("i", $slot_id);
 
@@ -97,35 +97,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // If the slot is now at capacity, update its status
         if ($slot['current_bookings'] + 1 >= $slot['capacity']) {
             $updateStatusStmt = $conn->prepare("UPDATE time_slots SET status = 'booked' WHERE id = ?");
             $updateStatusStmt->bind_param("i", $slot_id);
             $updateStatusStmt->execute();
         }
 
-        // Commit the transaction
         $conn->commit();
 
-        // Create notification for the doctor
         $doctorId = $slot['doctor_code'];
         $notificationMessage = "New appointment scheduled with patient #$patient_code for " . date('M j, Y g:i A', strtotime($slot['start_time']));
         $notifStmt = $conn->prepare("INSERT INTO notifications (user_id, message, type) VALUES (?, ?, 'appointment')");
         $notifStmt->bind_param("is", $doctorId, $notificationMessage);
         $notifStmt->execute();
 
-        // =============== SEND EMAIL VIA PHPMAILER ===============
-        
-        // Fetch patient and doctor information securely from users table
-        $stmt_user = $conn->prepare("SELECT name, email FROM users WHERE id = ?");
-        $stmt_user->bind_param("i", $patient_code);
+        $stmt_user = $conn->prepare("SELECT full_name as name, email FROM patients WHERE patient_code = ?");
+        $stmt_user->bind_param("s", $patient_code);
         $stmt_user->execute();
         $patData = $stmt_user->get_result()->fetch_assoc();
 
-        $stmt_doc = $conn->prepare("SELECT name FROM users WHERE id = ?");
-        $stmt_doc->bind_param("i", $slot['doctor_code']);
-        $stmt_doc->execute();
-        $docData = $stmt_doc->get_result()->fetch_assoc();
         $doctor_name = $docData['name'] ?? 'Doctor';
 
         if ($patData && !empty($patData['email'])) {
@@ -135,7 +125,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
             try {
-                // Server settings
                 $mail->isSMTP();
                 $mail->Host       = 'smtp.gmail.com'; 
                 $mail->SMTPAuth   = true;
@@ -173,7 +162,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $mail->send();
             } catch (\Exception $e) {
-                // Mail silently failed, but booking was successful.
                 error_log("Mail Error: " . $mail->ErrorInfo);
             }
         }

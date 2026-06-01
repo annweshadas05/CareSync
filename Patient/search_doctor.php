@@ -9,7 +9,6 @@ if (!isset($_SESSION['patient_id'])) {
 
 $id = $_SESSION['patient_id'];
 
-// Handle search and filtering
 $search_query = "";
 $dept_filter = "";
 $exp_filter = "1";
@@ -61,7 +60,7 @@ $doctor_result = $stmt_doc->get_result();
     <link rel="stylesheet" href="../Bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="../styles/patient_dashboard.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="../styles/search_doctor.css?v=<?php echo time(); ?>">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="../js/lucide.js"></script>
 </head>
 <body>
 
@@ -74,14 +73,13 @@ $doctor_result = $stmt_doc->get_result();
         <nav class="nav flex-column">
             <a class="nav-link" href="./patient_dashboard.php"><i data-lucide="layout-dashboard"></i> <span>Dashboard</span></a>
             <a class="nav-link active" href="./search_doctor.php"><i data-lucide="search"></i> <span>Search Doctor</span></a>
-            <a class="nav-link" href="#"><i data-lucide="calendar"></i> <span>Appointments</span></a>
-            <a class="nav-link" href="#"><i data-lucide="pill"></i> <span>Prescriptions</span></a>
-            <a class="nav-link" href="#"><i data-lucide="file-text"></i> <span>Health Reports</span></a>
+            <a class="nav-link" href="../appointment_scheduling/appointments.php"><i data-lucide="calendar"></i> <span>Appointments</span></a>
+            <a class="nav-link" href="medical_records.php"><i data-lucide="pill"></i> <span>Prescriptions</span></a>
+            <a class="nav-link" href="medical_records.php"><i data-lucide="file-text"></i> <span>Health Reports</span></a>
+             <a href="../logout.php" class="nav-link logout-link mt-auto">
+        <i data-lucide="log-out"></i> <span>Logout</span>
+    </a>
         </nav>
-
-        <a href="../logout.php" class="nav-link logout-link">
-            <i data-lucide="log-out"></i> <span>Logout</span>
-        </a>
     </div>
 
     <div class="main-content">

@@ -143,14 +143,15 @@ function validateForm() {
         isValid = false;
     }
 
-    let emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
-    if (!email.match(emailPattern)) {
-        document.getElementById("emailError").innerText = "Invalid email";
+    let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailPattern.test(email)) {
+        document.getElementById("emailError").innerText = "Invalid email format";
         isValid = false;
     }
 
-    if (password.length < 6) {
-        document.getElementById("passwordError").innerText = "Min 6 characters";
+    let passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordPattern.test(password)) {
+        document.getElementById("passwordError").innerText = "Password must be min 8 chars, include uppercase, lowercase, number, and special char (@$!%*?&)";
         isValid = false;
     }
 
@@ -168,12 +169,12 @@ require_once "../dbconnect.php";
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-    $mobile = $_POST['contact']; // ✅ FIXED
-    $branch = $_POST['branch'];
-    $password = $_POST['password'];
-    $confirmPassword = $_POST['confirmpassword'];
+    $name = trim($_POST['name']);
+    $email = trim($_POST['email']);
+    $mobile = trim($_POST['contact']);
+    $branch = trim($_POST['branch']);
+    $password = trim($_POST['password']);
+    $confirmPassword = trim($_POST['confirmpassword']);
 
     if ($password != $confirmPassword) {
         echo "<script>alert('Passwords do not match');</script>";
@@ -197,7 +198,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
     try {
         $stmt = $conn->prepare("INSERT INTO attendees (full_name, email, mobile, hospital_branch, password) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssss", $name, $email, $mobile, $branch, $password);
+        $stmt->bind_param("sssss", $name, $email, $mobile, $branch, $passwordHash);
         $stmt->execute();
 
         $last_id = $conn->insert_id;
@@ -216,7 +217,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
          // Log Activity
                 $activity = "New Attendee Registered: " . $attendee_code;
-                $logUser = "System"; 
+                $logUser = "Admin"; 
                 $logQuery = "INSERT INTO activity_logs (activity, user) VALUES (?, ?)";
                 $stmtLog = $conn->prepare($logQuery);
                 $stmtLog->bind_param("ss", $activity, $logUser);

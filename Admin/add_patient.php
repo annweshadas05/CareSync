@@ -1,36 +1,32 @@
 <?php
-// 1. PHP Logic at the very top
 $success=false;
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
-    require_once "../dbconnect.php"; // Adjust path if needed
+    require_once "../dbconnect.php";
 
     $success = false;
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-    $mobile = $_POST['mobile'];
-    $dob = $_POST['dob'];
-    $gender = $_POST['gender'];
-    $aadhar = $_POST['aadhar'];
-    $blood = $_POST['blood'];
-    $city = $_POST['city'];
-    $address = $_POST['address'];
-    $password = $_POST['password'];
-    $confirmPassword = $_POST['confirmpassword'];
+    $name = trim($_POST['name']);
+    $email = trim($_POST['email']);
+    $mobile = trim($_POST['mobile']);
+    $dob = trim($_POST['dob']);
+    $gender = trim($_POST['gender']);
+    $aadhar = trim($_POST['aadhar']);
+    $blood = trim($_POST['blood']);
+    $city = trim($_POST['city']);
+    $address = trim($_POST['address']);
+    $password = trim($_POST['password']);
+    $confirmPassword = trim($_POST['confirmpassword']);
 
-    // Validation Check (Backend)
     if ($password != $confirmPassword) {
         echo "<script>alert('Passwords do not match');</script>";
     } else {
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-        // Check if email or Aadhar already exists
         $check = $conn->prepare("SELECT id FROM patients WHERE email=? OR aadhar=?");
         $check->bind_param("ss", $email, $aadhar);
         $check->execute();
         if ($check->get_result()->num_rows > 0) {
             echo "<script>alert('Email or Aadhar already registered');</script>";
         } else {
-            // Start transaction
             $conn->begin_transaction();
 
             try {
@@ -66,9 +62,17 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 $stmtLog->execute();
 
                 $conn->commit();
-                $success = true; // This triggers the Modal below
-                include "../php_mail.php";
-                sendPatientMail($email,$name,$patient_code);
+                $success = true; // Trigger success modal
+
+                // Attempt to send email without blocking success feedback
+                try {
+                    include_once "../php_mail.php";
+                    if (function_exists('sendPatientMail')) {
+                        sendPatientMail($email, $name, $patient_code);
+                    }
+                } catch (Exception $e) {
+                    // Log error internally if needed, but don't stop the success message
+                }
 
             } catch (Exception $e) {
                 $conn->rollback();
@@ -236,7 +240,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     </div>
 
     <script src="../Bootstrap/bootstrap.bundle.min.js"></script>
-    <script src="../js/add_patient.js"></script>
+    <script src="../js/add_patient.js?v=<?= time() ?>"></script>
     <?php if ($success): ?>
         <script>
             var myModal = new bootstrap.Modal(document.getElementById('successModal'));

@@ -1,29 +1,157 @@
-/* We inherit the primary Layout, Sidebar, and background from admin_dashboard.css */
-
-.info {
-    margin-bottom: 20px;
+body {
+    background: #f4f9fd;
+    overflow-x: hidden;
+    font-family: 'Segoe UI', sans-serif;
 }
 
-.info span {
-    font-weight: 600;
-    color: #64748b;
+
+
+.main-content {
+    margin-left: 270px;
+    padding: 30px;
+}
+
+.header-section {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
-    font-size: 0.9rem;
+    gap: 18px;
 }
 
-.info p {
-    background: rgba(255, 255, 255, 0.6);
-    border: 1px solid rgba(0, 97, 255, 0.1);
-    padding: 12px 15px;
-    border-radius: 10px;
-    margin: 0;
-    font-weight: 500;
-    color: #1e293b;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+.icon-box {
+    width: 65px;
+    height: 65px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #2563EB, #061727);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
 }
+
+.patient-card {
+    background: white;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
+    border: 1px solid rgba(13, 202, 240, 0.08);
+}
+
+
+.patient-top {
+    background: linear-gradient(135deg, #2563EB, #061727);
+    ;
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    position: relative;
+    overflow: hidden;
+}
+
+
+.avatar {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.18);
+    border: 4px solid rgba(255, 255, 255, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+    z-index: 2;
+    flex-shrink: 0;
+}
+
+.avatar svg {
+    width: 55px;
+    height: 55px;
+    color: white;
+}
+
+
+
+.patient-name {
+    z-index: 2;
+}
+
+.patient-name h3 {
+    color: white;
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+.patient-name p {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1rem;
+}
+
+.patient-name .text-info {
+    color: #ffffff !important;
+    font-weight: 700;
+}
+
+
+
+.row.g-4 {
+    padding: 35px;
+}
+
+
+.info {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+    border: 1px solid #e2eef8;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+    transition: 0.3s ease;
+}
+
+.info:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 22px rgba(13, 202, 240, 0.12);
+}
+
+/* =========================
+   LABEL
+========================= */
+
+.info span {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #64748b;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+/* =========================
+   ICONS
+========================= */
+
+.info svg {
+    width: 18px;
+    height: 18px;
+    color: black;
+}
+
+/* =========================
+   VALUE
+========================= */
+
+.info p {
+    margin: 0;
+    font-size: 1rem;
+    color: #0f172a;
+    font-weight: 600;
+    word-break: break-word;
+}
+
+/* =========================
+   BUTTONS
+========================= */
 
 .btn-area {
     display: flex;
@@ -31,14 +159,69 @@
 }
 
 .btn-area .btn {
-    transition: all 0.3s ease;
+    transition: 0.3s ease;
 }
 
 .btn-area .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.bg-info {
-    background-color: #0dcaf0 !important;
-}
+/* =========================
+   MOBILE RESPONSIVE
+========================= */
+
+@media (max-width: 991px) {
+
+    .main-content {
+        margin-left: 0;
+        padding: 20px;
+    }
+
+    .patient-top {
+        flex-direction: column;
+        text-align: center;
+        padding: 35px 20px;
+    }
+
+    .patient-name h3 {
+        font-size: 1.6rem;
+    }
+
+    .row.g-4 {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+
+    .header-section {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .avatar {
+        width: 90px;
+        height: 90px;
+    }
+
+    .avatar svg {
+        width: 42px;
+        height: 42px;
+    }
+
+    .patient-name h3 {
+        font-size: 1.4rem;
+    }
+
+    .info {
+        padding: 16px;
+    }
+
+    .info span {
+        font-size: 0.85rem;
+    }
+
+    .info p {
+        font-size: 0.95rem;
+    }
+}

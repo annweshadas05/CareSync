@@ -7,24 +7,15 @@ if (!isset($_SESSION['patient_id'])) {
     exit();
 }
 
-// Get patient users.id
-$stmt = $conn->prepare("SELECT id FROM users WHERE patient_code = ?");
-$stmt->bind_param("s", $_SESSION['patient_id']);
-$stmt->execute();
-$res = $stmt->get_result();
-if($res->num_rows == 0) die("Invalid patient!");
-$patient_user_id = $res->fetch_assoc()['id'];
-
 // Fetch appointments using the correct schema
 $query = "SELECT a.*, d.full_name, d.department 
           FROM appointments a
-          JOIN users u ON a.doctor_code = u.id
-          JOIN doctors d ON d.doctor_code = u.doctor_code
-          WHERE a.patient_code = ?
-          ORDER BY a.start_time DESC";
+          JOIN doctors d ON d.doctor_code = a.doctor_code
+          WHERE a.patient_code = ? AND a.start_time >= NOW()
+          ORDER BY a.start_time ASC";
 
 $stmt = $conn->prepare($query);
-$stmt->bind_param("i", $patient_user_id);
+$stmt->bind_param("s", $_SESSION['patient_id']);
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
@@ -37,7 +28,7 @@ $result = $stmt->get_result();
     <title>My Appointments - CareSync</title>
     <link href="../Bootstrap/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../styles/patient_dashboard.css?v=<?php echo time(); ?>">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="../js/lucide.js"></script>
 </head>
 
 <body>
@@ -51,9 +42,9 @@ $result = $stmt->get_result();
         <nav class="nav flex-column">
             <a class="nav-link" href="./patient_dashboard.php"><i data-lucide="layout-dashboard"></i> <span>Dashboard</span></a>
             <a class="nav-link" href="./search_doctor.php"><i data-lucide="search"></i> <span>Search Doctor</span></a>
-            <a class="nav-link active" href="./my_appointments.php"><i data-lucide="calendar"></i> <span>Appointments</span></a>
-            <a class="nav-link" href="#"><i data-lucide="pill"></i> <span>Prescriptions</span></a>
-            <a class="nav-link" href="#"><i data-lucide="file-text"></i> <span>Health Reports</span></a>
+            <a class="nav-link active" href="../appointment_scheduling/appointments.php"><i data-lucide="calendar"></i> <span>Appointments</span></a>
+            <a class="nav-link" href="medical_records.php"><i data-lucide="pill"></i> <span>Prescriptions</span></a>
+            <a class="nav-link" href="medical_records.php"><i data-lucide="file-text"></i> <span>Health Reports</span></a>
         </nav>
 
         <a href="../logout.php" class="nav-link logout-link">

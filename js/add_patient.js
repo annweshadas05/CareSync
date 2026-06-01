@@ -28,10 +28,11 @@ function validateForm() {
 
     // 3. Regex Patterns
     const nameRegex = /^[A-Za-z ]{3,}$/;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const mobileRegex = /^[6-9][0-9]{9}$/;
     const aadharRegex = /^[0-9]{12}$/;
     const cityRegex = /^[A-Za-z ]{2,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
     // 4. Validation Logic
     if (!nameRegex.test(name)) setError("nameError", "Enter valid name (Min 3 letters)");
@@ -43,7 +44,9 @@ function validateForm() {
     if (blood === "") setError("bloodError", "Please select blood group");
     if (!cityRegex.test(city)) setError("cityError", "Enter valid city name");
     if (address.length < 10) setError("addressError", "Min 10 characters required for address");
-    if (password.length < 6) setError("passwordError", "Min 6 characters required");
+    if (!passwordRegex.test(password)) {
+        setError("passwordError", "Password must be min 8 chars, include uppercase, lowercase, number, and special char (@$!%*?&)");
+    }
     if (password !== confirmPassword) setError("confirmPasswordError", "Passwords do not match");
 
     // 5. UX: Scroll to first error

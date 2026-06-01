@@ -60,3 +60,30 @@
     font-weight: 500;
     border-radius: 20px;
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .schedule-header {
+        padding: 20px;
+    }
+
+    .icon-circle {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+    }
+
+    .table {
+        font-size: 0.8rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 8px 4px;
+    }
+
+    .btn-rounded {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}

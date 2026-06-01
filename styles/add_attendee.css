@@ -126,3 +126,37 @@ body {
     color: var(--text-muted);
     font-size: 0.85rem;
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .main-container {
+        padding: 20px 0;
+    }
+
+    .doctor-header {
+        padding: 20px;
+    }
+
+    .header-icon-box {
+        width: 50px;
+        height: 50px;
+    }
+
+    .add h3 {
+        font-size: 1.5rem;
+    }
+
+    .form-control-custom,
+    .custom-select-style {
+        padding: 10px 12px;
+    }
+
+    .add-btn {
+        padding: 12px 30px;
+        width: 100%;
+    }
+
+    .doctor-card {
+        margin: 0 10px;
+    }
+}

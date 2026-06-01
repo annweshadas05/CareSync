@@ -114,3 +114,28 @@ body {
 .fw-800 { font-weight: 800; }
 
 .bg-primary-soft { background: rgba(0, 97, 255, 0.1); }
+
+.tiny {
+    font-size: 0.7rem !important;
+    padding: 0.2rem 0.5rem !important;
+}
+
+.icon-sm {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 97, 255, 0.05);
+}
+
+.last-child-border-0:last-child {
+    border-bottom: none !important;
+}
+
+.badge {
+    font-weight: 600;
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+}

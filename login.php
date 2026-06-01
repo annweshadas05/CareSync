@@ -4,21 +4,17 @@ session_start();
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     require_once "dbconnect.php";
-    // Trim the input to remove spaces
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
 
-    // Prepare query
     $qry = "SELECT * FROM users WHERE email=?";
     $stmt = $conn->prepare($qry);
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    // Fetch the row
     if ($row = $result->fetch_assoc()) {
 
-        // Trim the DB password hash to avoid hidden spaces
         $hashFromDb = trim($row['password']);
 
         if (password_verify($password, $hashFromDb)) {
@@ -27,7 +23,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['name'] = $row['name'];
             $_SESSION['role'] = $row['role'];
 
-            // Redirect based on role
             if ($row['role'] == "admin") {
                 $_SESSION['email']=$row['email'];
                 header("Location: ./Admin/admin_dashboard.php");
@@ -82,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="Bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="styles/login.css?v=<?= time() ?>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="./js/lucide.js"></script>
 <script>
     lucide.createIcons();
 </script>
@@ -90,8 +85,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body class="login-page">
     <div class="back-to-home">
-        <a href="home.php" class="text-decoration-none text-muted">
-            <i class="bi bi-arrow-left me-1"></i> Back to Home
+        <a href="home.php" class="fw-bold text-decoration-none text-muted">
+            <i data-lucide="arrow-left"></i> Back to Home
         </a>
     </div>
 
@@ -103,7 +98,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <img src="./Assets/CareSyncLogo.png" class="login-logo" alt="CareSync">
                 </div>
                 <h2 class="fw-bold h4 mb-1">Welcome Back</h2>
-                <p class="text-muted small">Please enter your credentials to access CareSync</p>
+                <p class="text-muted small fw-bold">Please enter your credentials to access CareSync</p>
             </div>
 
             <div class="login-body p-4 p-md-5">
@@ -141,27 +136,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <div class="login-footer text-center p-4 border-top bg-light-soft">
-                <small class="text-muted">
-                    <i class="bi bi-shield-check text-primary me-1"></i> Authorized Medical Access Only
+                <small class="text-muted fw-bold">
+                    <i data-lucide="shield" class="text-primary"></i> Authorized Medical Access Only
                 </small>
             </div>
         </div>
-    </div>
+    </div>  
 
     <script src="Bootstrap/bootstrap.bundle.min.js"></script>
-    <script src="./js/login.js"></script>
+    <script src="./js/login.js?v=<?= time() ?>"></script>
    <div class="modal fade" id="forgotModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg" 
              style="border-radius: 24px; background: #ffffff; overflow: hidden;">
 
-            <!-- 🔵 HEADER -->
             <div class="text-center p-4"
                  style="background: linear-gradient(135deg, #0061ff, #061727 100%);">
 
                 <button type="button" 
                         class="btn-close btn-close-white float-end"
-                        data-bs-dismiss="modal"></button>
+                        data-bs-dismiss="modal">
+                </button>
 
                 <div class="mb-3 mt-2">
                     <img src="./Assets/CareSyncLogo.png" width="55"
@@ -177,7 +172,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </p>
             </div>
 
-            <!-- ⚪ BODY -->
             <div class="modal-body p-4">
 
                 <div class="text-center mb-4">
@@ -198,7 +192,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </p>
                 </div>
 
-                <!-- FORM -->
                 <form action="./forgotpassword/send_reset.php" method="POST">
 
                     <div class="mb-4">
@@ -215,7 +208,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                     </div>
 
-                    <!-- BUTTON -->
                     <button type="submit"
                             class="w-100 border-0 py-3 fw-semibold"
                             style="

@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['email'])) {
     
     $email = $_POST['email'];
     $token = bin2hex(random_bytes(50));
-    $expiry = date("Y-m-d H:i:s", strtotime('+1 hour'));
+    $expiry = date("Y-m-d H:i:s", strtotime('+5 minutes'));
 
     $sql = "UPDATE users SET reset_token=?, token_expiry=? WHERE email=?";
     $stmt = $conn->prepare($sql);

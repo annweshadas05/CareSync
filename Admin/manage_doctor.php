@@ -33,7 +33,7 @@ $result = $conn->query($sql);
     <title>CareSync | Manage Doctors</title>
     <link rel="stylesheet" href="../Bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="../styles/admin_dashboard.css?v=<?php echo time(); ?>">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="../js/lucide.js"></script>
 </head>
 <body>
 
@@ -46,11 +46,12 @@ $result = $conn->query($sql);
             <a class="nav-link" href="admin_dashboard.php"><i data-lucide="layout-grid"></i> <span>Dashboard</span></a>
             <a class="nav-link active" href="manage_doctor.php"><i data-lucide="user-cog"></i> <span>Doctors</span></a>
             <a class="nav-link" href="manage_patient.php"><i data-lucide="users"></i> <span>Patients</span></a>
+            <a class="nav-link" href="manage_attendee.php"><i data-lucide="user-check"></i> <span>Attendees</span></a>
             <a class="nav-link" href="doctor_schedule.php"><i data-lucide="calendar"></i> <span>Appointments</span></a>
-        </nav>
-        <a href="../logout.php" class="nav-link logout-link">
+            <a href="../logout.php" class="nav-link logout-link">
             <i data-lucide="log-out"></i> <span>Logout</span>
         </a>
+        </nav>
     </div>
 
     <div class="main-content">
@@ -109,7 +110,7 @@ $result = $conn->query($sql);
                         <?php if ($result->num_rows > 0): ?>
                             <?php while ($row = $result->fetch_assoc()): ?>
                                 <tr>
-                                    <td class="ps-4 fw-bold text-primary">#<?php echo $row['doctor_code']; ?></td>
+                                    <td class="ps-4 fw-bold text-primary"><?php echo $row['doctor_code']; ?></td>
                                     <td>
                                         <div class="d-flex align-items-center gap-3">
                                             <div class="icon-box bg-light text-primary" style="width:40px; height:40px;">

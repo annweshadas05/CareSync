@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 17, 2026 at 07:12 PM
+-- Generation Time: May 18, 2026 at 07:57 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -39,32 +39,10 @@ CREATE TABLE `activity_logs` (
 --
 
 INSERT INTO `activity_logs` (`id`, `activity`, `user`, `created_at`) VALUES
-(1, 'New Doctor Added', 'Admin', '2026-03-17 18:59:34'),
-(2, 'New Doctor Added', 'Admin', '2026-03-18 14:20:14'),
-(3, 'New Patient Registered', 'Admin', '2026-03-18 17:06:25'),
-(4, 'New Patient Registered', 'Admin', '2026-03-18 17:18:14'),
-(5, 'New Patient Registered', 'Admin', '2026-03-18 17:36:22'),
-(6, 'New Patient Registered', 'Admin', '2026-03-18 18:57:26'),
-(7, 'New Patient Registered', 'Admin', '2026-03-18 19:00:16'),
-(8, 'New Patient Registered', 'Admin', '2026-03-18 19:05:05'),
-(9, 'New Doctor Added', 'Admin', '2026-03-18 19:40:26'),
-(10, 'New Patient Registered', 'Admin', '2026-03-18 19:50:35'),
-(11, 'New Patient Registered', 'Admin', '2026-03-19 14:11:10'),
-(12, 'New Doctor Added', 'Admin', '2026-03-19 17:33:47'),
-(13, 'New Doctor Added', 'Admin', '2026-03-20 07:50:06'),
-(14, 'New Patient Registered', 'Admin', '2026-03-20 16:03:50'),
-(15, 'New Patient Registered', 'Admin', '2026-03-20 16:05:17'),
-(16, 'New Patient Registered', 'Admin', '2026-03-20 16:23:40'),
-(17, 'New Doctor Added', 'Admin', '2026-03-20 18:24:13'),
-(18, 'New Doctor Added', 'Admin', '2026-03-20 18:37:00'),
-(19, 'New Doctor Added', 'Admin', '2026-04-07 11:12:13'),
-(20, 'New Doctor Added', 'Admin', '2026-04-10 20:16:45'),
-(21, 'New Doctor Added', 'Admin', '2026-04-10 20:23:34'),
-(22, 'New Patient Registered: PAT-2026-001', 'System', '2026-04-16 04:14:42'),
-(23, 'New Patient Registered: PAT-2026-002', 'System', '2026-04-16 04:23:04'),
-(24, 'New Attendee Registered: ', 'System', '2026-04-16 07:21:05'),
-(25, 'New Attendee Registered: ATTN-2026-002', 'System', '2026-04-16 07:28:07'),
-(26, 'New Doctor Added', 'Admin', '2026-04-17 13:45:01');
+(1, 'New Patient Registered: PAT-2026-001', 'System', '2026-05-14 18:44:14'),
+(2, 'New Doctor Added', 'Admin', '2026-05-14 18:45:49'),
+(3, 'New Attendee Registered: ATTN-2026-003', 'Admin', '2026-05-14 19:35:37'),
+(4, 'New Attendee Registered: ATTN-2026-004', 'Admin', '2026-05-14 19:37:53');
 
 -- --------------------------------------------------------
 
@@ -74,8 +52,8 @@ INSERT INTO `activity_logs` (`id`, `activity`, `user`, `created_at`) VALUES
 
 CREATE TABLE `appointments` (
   `id` int(11) NOT NULL,
-  `patient_code` int(11) NOT NULL COMMENT 'References users.id where role=patient',
-  `doctor_code` int(11) NOT NULL COMMENT 'References users.id where role=doctor',
+  `patient_code` varchar(20) NOT NULL COMMENT 'References patients.patient_code',
+  `doctor_code` varchar(20) NOT NULL COMMENT 'References doctors.doctor_code',
   `slot_id` int(11) DEFAULT NULL,
   `reason` text DEFAULT NULL,
   `start_time` datetime DEFAULT NULL,
@@ -85,13 +63,6 @@ CREATE TABLE `appointments` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `appointments`
---
-
-INSERT INTO `appointments` (`id`, `patient_code`, `doctor_code`, `slot_id`, `reason`, `start_time`, `end_time`, `location`, `status`, `created_at`, `updated_at`) VALUES
-(1, 4, 2, 2, '', '2026-04-19 14:00:00', '2026-04-19 15:00:00', 'Virtual Call', 'cancelled', '2026-04-17 16:59:52', '2026-04-17 17:01:59');
 
 -- --------------------------------------------------------
 
@@ -115,7 +86,8 @@ CREATE TABLE `attendees` (
 --
 
 INSERT INTO `attendees` (`id`, `full_name`, `email`, `mobile`, `hospital_branch`, `password`, `attendee_code`, `created_at`) VALUES
-(2, 'Manish Sharma', 'mca.24mmce34@silicon.ac.in', '8340778990', 'Bhubaneswar', 'mani123', 'ATTN-2026-002', '2026-04-16 07:28:07');
+(2, 'Manish Sharma', 'mca.24mmce34@silicon.ac.in', '8340778990', 'Bhubaneswar', 'mani123', 'ATTN-2026-002', '2026-04-16 07:28:07'),
+(4, 'Ankit Sao', 'ankitsao7852@gmail.com', '7894561230', 'Bhubaneswar', '$2y$10$5NOvYHuNQBCgU3O7ZHdss.yP4a54hH.Za3ZSi4VoY5Fyk2teWAGfy', 'ATTN-2026-004', '2026-05-14 19:37:53');
 
 -- --------------------------------------------------------
 
@@ -162,8 +134,7 @@ CREATE TABLE `doctors` (
 --
 
 INSERT INTO `doctors` (`id`, `doctor_code`, `full_name`, `department`, `specialization`, `experience`, `contact`, `email`, `password`, `created_at`) VALUES
-(1, 'DOC-2026-001', 'Manish Sharma', 'Cardiology', 'Surgeon', 5, '8340778990', 'manishsharma081999@gmail.com', '$2y$10$HxdZFUQTsGXi927aUMP7eu9hhFHh92Wi7mxNOAGMYnUjwYiezi4D.', '2026-04-10 20:23:34'),
-(2, 'DOC-2026-002', 'Rahul Kumar', 'Orthopedics', 'Surgeon', 5, '9470124686', 'rahul123@gmail.com', '$2y$10$K73hDIFhlLAWxa8L5GPTOOd/HdFW2ew7uMX82NhgTp3f349oIMY3y', '2026-04-17 13:45:01');
+(1, 'DOC-2026-001', 'Rahul Kumar', 'Cardiology', 'Surgeon', 5, '7894561230', 'manishsharma081999@gmail.com', '$2y$10$KRhwIKJbxtAlNZSQ8FKv4OvDAVTv2kLCyxAgZRGGRZNZFYIU6LX.e', '2026-05-14 18:45:49');
 
 -- --------------------------------------------------------
 
@@ -185,8 +156,8 @@ CREATE TABLE `notifications` (
 --
 
 INSERT INTO `notifications` (`id`, `user_id`, `message`, `type`, `is_read`, `created_at`) VALUES
-(1, 2, 'New appointment scheduled with patient #4 for Apr 19, 2026 2:00 PM', 'appointment', 0, '2026-04-17 16:59:52'),
-(2, 2, 'Your appointment on Sunday, April 19, 2026 has been cancelled.', 'appointment', 0, '2026-04-17 17:01:59');
+(1, 3, 'New appointment scheduled with patient #PAT-2026-001 for May 31, 2026 1:16 AM', 'appointment', 0, '2026-05-14 18:47:45'),
+(2, 3, 'Your appointment on Sunday, May 31, 2026 has been cancelled.', 'appointment', 0, '2026-05-14 18:49:37');
 
 -- --------------------------------------------------------
 
@@ -215,7 +186,33 @@ CREATE TABLE `patients` (
 --
 
 INSERT INTO `patients` (`id`, `patient_code`, `full_name`, `email`, `mobile`, `dob`, `gender`, `aadhar`, `blood_group`, `city`, `address`, `password`, `created_at`) VALUES
-(2, 'PAT-2026-002', 'Manish Sharma', 'sharmamanish5846579@gmail.com', '8340778990', '2026-04-02', 'male', '565623232232', 'O+', 'Barajamda', 'Near Reliance Tower Football Ground Barajamda', '$2y$10$qt/oSOoOGeHxCrylKO3XletPWELoNCwmvbZrgkQHNoWn0/wuN5q0i', '2026-04-16 04:23:04');
+(1, 'PAT-2026-001', 'Manish Sharma', 'sharmamanish5846579@gmail.com', '8340778990', '2026-05-04', 'male', '565623232232', 'O+', 'Barajamda', 'Near Reliance Tower Football Ground Barajamda', '$2y$10$5T4rJHg65XFAf09e4vxFbeeKalauV1o5jYmf.XHxgf85QUlPo1LSG', '2026-05-14 18:44:14');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `prescription_medicines`
+--
+
+CREATE TABLE `prescription_medicines` (
+  `id` int(11) NOT NULL,
+  `medicine` varchar(100) DEFAULT NULL,
+  `form` varchar(50) DEFAULT NULL,
+  `dosage` varchar(50) DEFAULT NULL,
+  `frequency` varchar(50) DEFAULT NULL,
+  `duration` varchar(50) DEFAULT NULL,
+  `patient_code` varchar(20) NOT NULL,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `prescription_medicines`
+--
+
+INSERT INTO `prescription_medicines` (`id`, `medicine`, `form`, `dosage`, `frequency`, `duration`, `patient_code`, `notes`, `created_at`) VALUES
+(1, 'Calpol', 'Syrup', '4ml', 'Three times daily', '3 days', 'PAT-2026-001', 'Please Take Medicine on time', '2026-05-18 02:10:32'),
+(2, 'Delcon', 'Syrup', '8ml', 'Three times daily', '3 days', 'PAT-2026-001', 'Please Take Medicine on time', '2026-05-18 02:10:32');
 
 -- --------------------------------------------------------
 
@@ -239,8 +236,7 @@ CREATE TABLE `time_slots` (
 --
 
 INSERT INTO `time_slots` (`id`, `doctor_code`, `start_time`, `end_time`, `status`, `location`, `capacity`, `booked_count`) VALUES
-(1, 2, '2026-04-18 09:00:00', '2026-04-18 10:00:00', 'available', 'Room 101, CareSync Main Branch', 1, 0),
-(2, 2, '2026-04-19 14:00:00', '2026-04-19 15:00:00', 'available', 'Virtual Call', 1, 0);
+(1, 3, '2026-05-31 01:16:00', '2026-05-31 02:17:00', 'available', 'CareSync Clinic Room A', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -266,11 +262,40 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `reset_token`, `token_expiry`, `patient_code`, `doctor_code`, `attendee_code`) VALUES
-(1, 'Admin', 'admincaresync@gmail.com', '$2y$10$oWI.pFiUhSrJAwM45L/9kO8QU3DNI3wEsLUNRqcgsuc4RaD6ruwUW', 'admin', NULL, NULL, NULL, NULL, NULL),
-(2, 'Manish Sharma', 'manishsharma081999@gmail.com', '$2y$10$HxdZFUQTsGXi927aUMP7eu9hhFHh92Wi7mxNOAGMYnUjwYiezi4D.', 'doctor', '8662c0428909722a56ec52a0a8716b3a1726691c689ae18ea3c094faf6f1df9ec3c1d9d56aaed2cc07ab0fe04460fa88aaed', '2026-04-17 14:07:25', NULL, 'DOC-2026-001', NULL),
-(4, 'Manish Sharma', 'sharmamanish5846579@gmail.com', '$2y$10$YMxbQYB032seha/a5LooYOBbOlOt8IleA5D9M9aqu8WmJiArpY7Wu', 'patient', NULL, NULL, 'PAT-2026-002', NULL, NULL),
-(7, 'Manish Sharma', 'mca.24mmce34@silicon.ac.in', '$2y$10$D9WciNq8/mlLITpV5O/tmeZWhud4dJCoUoJrBMxovB/ZvBl.eaTTa', 'attendee', NULL, NULL, NULL, NULL, 'ATTN-2026-002'),
-(8, 'Rahul Kumar', 'rahul123@gmail.com', '$2y$10$K73hDIFhlLAWxa8L5GPTOOd/HdFW2ew7uMX82NhgTp3f349oIMY3y', 'doctor', NULL, NULL, NULL, 'DOC-2026-002', NULL);
+(1, 'Admin', 'admincaresync@gmail.com', '$2y$10$g5neN3iDI.gTx20qWwm72uoFVPpVQ/AzkChky2BA8FOvw.I7jB7J.', 'admin', NULL, NULL, NULL, NULL, NULL),
+(2, 'Manish Sharma', 'sharmamanish5846579@gmail.com', '$2y$10$5T4rJHg65XFAf09e4vxFbeeKalauV1o5jYmf.XHxgf85QUlPo1LSG', 'patient', NULL, NULL, 'PAT-2026-001', NULL, NULL),
+(3, 'Rahul Kumar', 'manishsharma081999@gmail.com', '$2y$10$KRhwIKJbxtAlNZSQ8FKv4OvDAVTv2kLCyxAgZRGGRZNZFYIU6LX.e', 'doctor', NULL, NULL, NULL, 'DOC-2026-001', NULL),
+(4, 'Ankit Sao', 'ankit7852@gmail.com', '$2y$10$Zbb9AxSOUM2yE/OTfJG0qOGhIPTJV.9M9W9SqfOSpDOS0U56qzhCO', 'attendee', NULL, NULL, NULL, NULL, 'ATTN-2026-003'),
+(5, 'Ankit Sao', 'ankitsao7852@gmail.com', '$2y$10$5NOvYHuNQBCgU3O7ZHdss.yP4a54hH.Za3ZSi4VoY5Fyk2teWAGfy', 'attendee', NULL, NULL, NULL, NULL, 'ATTN-2026-004');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `vitals`
+--
+
+CREATE TABLE `vitals` (
+  `id` int(11) NOT NULL,
+  `patient_code` varchar(20) NOT NULL,
+  `attendee_code` varchar(20) DEFAULT NULL,
+  `blood_pressure` varchar(20) DEFAULT NULL COMMENT 'e.g. 120/80',
+  `heart_rate` int(11) DEFAULT NULL COMMENT 'bpm',
+  `temperature` decimal(4,1) DEFAULT NULL COMMENT 'Celsius',
+  `respiratory_rate` int(11) DEFAULT NULL COMMENT 'breaths/min',
+  `oxygen_saturation` decimal(4,1) DEFAULT NULL COMMENT 'percent',
+  `blood_sugar` decimal(6,1) DEFAULT NULL COMMENT 'mg/dL',
+  `weight_kg` decimal(5,1) DEFAULT NULL,
+  `height_cm` decimal(5,1) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `recorded_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `vitals`
+--
+
+INSERT INTO `vitals` (`id`, `patient_code`, `attendee_code`, `blood_pressure`, `heart_rate`, `temperature`, `respiratory_rate`, `oxygen_saturation`, `blood_sugar`, `weight_kg`, `height_cm`, `notes`, `recorded_at`) VALUES
+(1, 'PAT-2026-001', 'ATTN-2026-004', '100', 40, 32.0, 15, 74.0, 90.0, 70.0, 159.8, 'All Good', '2026-05-14 19:46:23');
 
 --
 -- Indexes for dumped tables
@@ -322,6 +347,12 @@ ALTER TABLE `patients`
   ADD UNIQUE KEY `password` (`password`);
 
 --
+-- Indexes for table `prescription_medicines`
+--
+ALTER TABLE `prescription_medicines`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `time_slots`
 --
 ALTER TABLE `time_slots`
@@ -337,6 +368,13 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `attendee_code` (`attendee_code`);
 
 --
+-- Indexes for table `vitals`
+--
+ALTER TABLE `vitals`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_patient_code` (`patient_code`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -344,7 +382,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `appointments`
@@ -356,13 +394,13 @@ ALTER TABLE `appointments`
 -- AUTO_INCREMENT for table `attendees`
 --
 ALTER TABLE `attendees`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `doctors`
 --
 ALTER TABLE `doctors`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -374,19 +412,31 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `patients`
 --
 ALTER TABLE `patients`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `prescription_medicines`
+--
+ALTER TABLE `prescription_medicines`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `time_slots`
 --
 ALTER TABLE `time_slots`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `vitals`
+--
+ALTER TABLE `vitals`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

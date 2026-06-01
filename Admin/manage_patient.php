@@ -29,7 +29,7 @@ $result = $conn->query($sql);
     <title>CareSync | Manage Patients</title>
     <link rel="stylesheet" href="../Bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="../styles/admin_dashboard.css?v=<?php echo time(); ?>">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="../js/lucide.js"></script>
 </head>
 <body class="admin-bg">
 
@@ -42,11 +42,12 @@ $result = $conn->query($sql);
             <a class="nav-link" href="admin_dashboard.php"><i data-lucide="layout-grid"></i> <span>Dashboard</span></a>
             <a class="nav-link" href="manage_doctor.php"><i data-lucide="user-cog"></i> <span>Doctors</span></a>
             <a class="nav-link active" href="manage_patient.php"><i data-lucide="users"></i> <span>Patients</span></a>
+            <a class="nav-link" href="manage_attendee.php"><i data-lucide="user-check"></i> <span>Attendees</span></a>
             <a class="nav-link" href="doctor_schedule.php"><i data-lucide="calendar"></i> <span>Appointments</span></a>
+            <a href="../logout.php" class="nav-link logout-link">
+                <i data-lucide="log-out"></i> <span>Logout</span>
+            </a>
         </nav>
-        <a href="../logout.php" class="nav-link logout-link">
-            <i data-lucide="log-out"></i> <span>Logout</span>
-        </a>
     </div>
 
     <div class="main-content">
@@ -70,7 +71,7 @@ $result = $conn->query($sql);
                             <i data-lucide="search" size="18" class="text-muted"></i>
                         </span>
                         <input type="text" name="search" class="form-control border-start-0 rounded-end-pill px-3" 
-                               placeholder="Search by Patient ID, Name, or Mobile..." value="<?php echo htmlspecialchars($search); ?>">
+                               placeholder="Search by Patient Code, Name, or Mobile..." value="<?php echo htmlspecialchars($search); ?>">
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -86,7 +87,7 @@ $result = $conn->query($sql);
                 <table class="table table-hover align-middle mb-0">
                     <thead class="bg-light">
                         <tr>
-                            <th class="ps-4">ID</th>
+                            <th class="ps-4">Patient Code</th>
                             <th>Patient Details</th>
                             <th>DOB / Gender</th>
                             <th>Contact</th>
@@ -98,7 +99,7 @@ $result = $conn->query($sql);
                         <?php if ($result->num_rows > 0): ?>
                             <?php while ($row = $result->fetch_assoc()): ?>
                                 <tr>
-                                    <td class="ps-4"><span class="badge bg-primary-soft text-primary">#<?php echo $row['patient_code']; ?></span></td>
+                                    <td class="ps-4"><span class="badge bg-primary-soft text-primary"><?php echo $row['patient_code']; ?></span></td>
                                     <td>
                                         <div class="fw-bold"><?php echo $row['full_name']; ?></div>
                                         <small class="text-muted text-uppercase" style="font-size: 10px; letter-spacing: 1px;">Registered User</small>

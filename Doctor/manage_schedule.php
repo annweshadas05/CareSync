@@ -65,14 +65,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-// Handle Form Submission for Deleting a Slot
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_slot') {
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         $error_msg = "Security validation failed.";
     } else {
         $del_id = (int)$_POST['slot_id'];
         
-        // Prevent deleting if it has active bookings OR confirm it belongs to this doctor
         $checkStmt = $conn->prepare("SELECT booked_count FROM time_slots WHERE id = ? AND doctor_code = ?");
         $checkStmt->bind_param("ii", $del_id, $doctor_user_id);
         $checkStmt->execute();
@@ -117,7 +115,7 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../Bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="../styles/doctor_dashboard.css?v=<?php echo time(); ?>">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="../js/lucide.js"></script>
     <style>
         .schedule-card {
             background: white; border-radius: 16px; padding: 1.5rem; transition: 0.3s;
@@ -138,12 +136,11 @@ try {
     <nav class="nav flex-column">
         <a class="nav-link" href="doctor_dashboard.php"><i data-lucide="layout-dashboard"></i> <span>Dashboard</span></a>
         <a class="nav-link" href="../appointment_scheduling/appointments.php"><i data-lucide="calendar"></i> <span>Appointments</span></a>
-        <a class="nav-link active" href="manage_schedule.php"><i data-lucide="clock"></i> <span>My Schedule</span></a> <!-- New Link! -->
-        <a class="nav-link" href="#"><i data-lucide="users"></i> <span>Patients</span></a>
+        <a class="nav-link active" href="manage_schedule.php"><i data-lucide="clock"></i> <span>My Schedule</span></a> 
         <a class="nav-link" href="#"><i data-lucide="clipboard-list"></i> <span>Notes</span></a>
-        <div style="margin-top: auto; padding-top: 100px;">
-            <a href="../logout.php" class="nav-link text-danger"><i data-lucide="log-out"></i> <span>Logout</span></a>
-        </div>
+        <a href="../logout.php" class="nav-link logout-link" style="color: #ff4d4d !important;">
+            <i data-lucide="log-out"></i> <span>Logout</span>
+        </a>
     </nav>
 </div>
 
@@ -164,7 +161,6 @@ try {
         <div class="alert alert-danger rounded-4 d-flex align-items-center"><i data-lucide="alert-circle" class="me-2"></i> <?php echo $error_msg; ?></div>
     <?php endif; ?>
 
-    <!-- SLOT CREATION SYSTEM -->
     <div class="glass-card mb-5 p-4">
         <h5 class="fw-bold mb-4 d-flex align-items-center gap-2"><i data-lucide="calendar-plus" class="text-primary"></i> Create Available Slot</h5>
         <form method="POST">
@@ -255,7 +251,6 @@ try {
 <script src="../Bootstrap/bootstrap.bundle.min.js"></script>
 <script>
     lucide.createIcons();
-    // Auto-dismiss alerts after ~4 seconds
     setTimeout(() => {
         let alerts = document.querySelectorAll('.alert');
         alerts.forEach(alert => alert.remove());

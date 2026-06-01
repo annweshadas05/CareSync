@@ -2,7 +2,6 @@
 session_start();
 require_once '../dbconnect.php';
 
-// Check if admin is logged in
 if (!isset($_SESSION['email'])) {
     header('location:../login.php');
     exit();
@@ -19,7 +18,7 @@ if (!isset($_SESSION['email'])) {
     <link rel="stylesheet" href="../Bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="../styles/admin_dashboard.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="../styles/view_doctor.css?v=<?php echo time(); ?>">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="../js/lucide.js"></script>
 </head>
 <body>
 
@@ -33,6 +32,7 @@ if (!isset($_SESSION['email'])) {
             <a class="nav-link" href="admin_dashboard.php"><i data-lucide="layout-grid"></i> <span>Dashboard</span></a>
             <a class="nav-link active" href="manage_doctor.php"><i data-lucide="user-cog"></i> <span>Doctors</span></a>
             <a class="nav-link" href="manage_patient.php"><i data-lucide="users"></i> <span>Patients</span></a>
+            <a class="nav-link" href="manage_attendee.php"><i data-lucide="user-check"></i> <span>Attendees</span></a>
             <a class="nav-link" href="doctor_schedule.php"><i data-lucide="calendar"></i> <span>Appointments</span></a>
             <a class="nav-link" href="records.php"><i data-lucide="file-text"></i> <span>Records</span></a>
             <a class="nav-link" href="reports.php"><i data-lucide="bar-chart-3"></i> <span>Reports</span></a>
@@ -56,16 +56,13 @@ if (!isset($_SESSION['email'])) {
             </div>
 
             <?php
-            /* Check if id exists */
             if (!isset($_GET['id'])) {
                 header('location:manage_doctor.php');
                 exit();
             }
 
-            /* Sanitize id */
             $id = $_GET['id'];
 
-            /* Query */
             $qry = "SELECT * FROM doctors WHERE doctor_code = ?";
             $stmt = $conn->prepare($qry);
             $stmt->bind_param("s", $id);
@@ -83,11 +80,11 @@ if (!isset($_SESSION['email'])) {
                         </div>
 
                         <div class="doctor-name">
-                            <h3 class="fw-bold text-dark mb-1">
+                            <h3 class="fw-bold text-white mb-1">
                                 <?php echo htmlspecialchars($data['full_name']); ?>
                             </h3>
                             <p class="text-muted mb-0 fw-medium">Doctor ID: 
-                                <span class="text-primary"><?php echo htmlspecialchars($id); ?></span>
+                                <span class="text-white"><?php echo htmlspecialchars($id); ?></span>
                             </p>
                         </div>
                     </div>
